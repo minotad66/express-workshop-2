@@ -1,10 +1,9 @@
 const express = require("express");
 const app = express();
-const exphbs = require("express-handlebars")
-const fs = require("fs")
-//const readPosts = require("./helpers/readPosts.js");
+const exphbs = require("express-handlebars");
+const fs = require("fs");
+const readPosts = require("./helpers/readPosts.js");
 
-// Then these two lines after you initialise your express app
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
@@ -12,7 +11,7 @@ app.set("view engine", "handlebars");
 // i.e /my-cv will server /my-cv.html
 app.use(express.static("public", { extensions: ["html"] }));
 
-app.get("/", (req, res) => {
+app.get("/", function(req, res) {
   const filePath = __dirname + "/data/posts.json";
   const callbackFunction = (error, file) => {
     // we call .toString() to turn the file buffer to a String
@@ -28,28 +27,46 @@ app.get("/", (req, res) => {
   fs.readFile(filePath, callbackFunction);
 });
 
-app.get("/contact", (req, res) => {
-  res.render("contact", {
-    title: "Contact"
-  });
+app.get("/posts", function(req, res) {
+  res.sendFile(__dirname + "/data/posts.json");
 });
 
-app.get("/my-cv", (req, res) => {
+app.get("/posts/:id", function(req, res) {
+  const postId = req.params.id;
+  const filePath = __dirname + "/data/posts.json";
+  const callbackFunction = function(error, file) {
+    const fileData = file.toString();
+    const postsJson = JSON.parse(fileData);
+    const first = [postsJson[0]];
+    res.render("posts", {
+      title: first,
+      summary: first,
+      content: first
+    });
+  };
+
+  fs.readFile(filePath, callbackFunction);
+  res.send(req.params);
+});
+
+app.get("/my-cv", function(req, res) {
   res.render("my-cv", {
     title: "My cv",
     subholder: "Welcome To My Cv"
   });
 });
 
-app.get("/admin", (req, res) => {
+app.get("/admin", function(req, res) {
   res.render("admin", {
-    title: "Admin"
+    title: "admin",
+    subholder: "Our Admin"
   });
 });
 
-app.get("/api/posts", function(req, res) {
-  readPosts(function(error, posts) {
-    res.json(posts);
+app.get("/contact", function(req, res) {
+  res.render("contact", {
+    title: "contact",
+    subholder: "Contact Us"
   });
 });
 
