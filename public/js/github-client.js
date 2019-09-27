@@ -6,7 +6,7 @@ function loadRepos(userName) {
         reposInfo.forEach(function(repo) {
             const description = repo.description ? repo.description.substring(0, 50) : "No Description";
 
-            html += `<div class="col-sm-6 col-md-4">
+            html += `<div class="col-sm-6 col-md-6">
                 <div class="thumbnail repo-info">
                 <div class="caption">
                     <h3>${repo.name}</h3>
